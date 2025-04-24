@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import MicrophoneButton from "@/components/MicrophoneButton";
 import TravelCard from "@/components/TravelCard";
 import StayCard from "@/components/StayCard";
@@ -71,7 +71,6 @@ export default function HomePage() {
   };
 
   const fetchRecordings = async function (lasttranscript: string) {
-    setIsLoadingResponse(true);
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
@@ -104,6 +103,13 @@ export default function HomePage() {
     setIsLoadingResponse(false);
   };
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  });
+
   // Use useCallback to prevent unnecessary re-renders
   const handleTranscriptChange = (newTranscript: string) => {
     if (newTranscript && newTranscript !== "" && newTranscript !== transcript) {
@@ -129,6 +135,7 @@ export default function HomePage() {
       // If we were listening and now we're not, recording was just completed
       if (isListening && !listening) {
         setRecordingCompleted(true);
+        setIsLoadingResponse(true); //Loading  response true here to prevent gltich
       } else if (listening) {
         // If we start listening again, reset recordingCompleted
         setRecordingCompleted(false);
@@ -143,7 +150,7 @@ export default function HomePage() {
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
 
-    if (isListening) {
+    if (isListening || isLoadingResponse) {
       interval = setInterval(() => {
         setDotCount((prevCount) => (prevCount + 1) % 4);
       }, 500);
@@ -152,7 +159,7 @@ export default function HomePage() {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isListening]);
+  }, [isListening, isLoadingResponse]);
 
   // Generate the dots for the listening indicator
   const getDots = () => {
@@ -233,184 +240,187 @@ export default function HomePage() {
 
         {/* Content Area: Transcript or Trip List */}
         <div
-          className="relative flex-grow px-6 pt-4 overflow-y-auto flex flex-col 
-                       after:content-[''] after:absolute after:bottom-[-30%] after:left-0 after:right-0 after:h-10 after:bg-gradient-to-t after:from-white after:to-transparent after:pointer-events-none"
+          ref={scrollRef} // Ref for scrolling
+          className="relative flex-grow px-6 pt-4 overflow-y-auto flex flex-col  scroll-container
+                       "
         >
           {/* Show transcript only when listening */}
 
-          {isListening && transcript && (
+          {isListening && transcript ? (
             <div className="flex-grow my-6">
               <p className="text-[#717070] text-center">{transcript}</p>
             </div>
-          )}
+          ) : (
+            /* Show chat only when not listening */
+            chat.length > 0 && (
+              <div className="s">
+                {chat.map((message, index) => {
+                  return (
+                    <div key={index} className="text-base">
+                      <div className="bg-[#E9E9E9] mt-2 px-4 py-3 rounded-lg flex gap-2 items-center">
+                        <Image
+                          src={"/me.png"}
+                          height={40}
+                          width={40}
+                          alt="User"
+                        />
+                        <p className=" text-[#717070] text-sm m-0">
+                          {message.me}
+                        </p>
+                      </div>
+                      <div className="bg-[#E9E9E9] mt-2 px-4 py-3 rounded-lg flex gap-2 items-center">
+                        <Image
+                          src={"/zenTrip.png"}
+                          height={40}
+                          width={40}
+                          alt="User"
+                        />
+                        <p className=" text-[#717070] text-sm m-0">
+                          {message.zenTrip}
+                        </p>
+                      </div>
 
-          {chat.length > 0 && (
-            <div className="s">
-              {chat.map((message, index) => {
-                return (
-                  <div key={index} className="">
-                    <div className="bg-[#E9E9E9] mt-2 px-4 py-3 rounded-lg flex gap-2 items-center">
-                      <Image
-                        src={"/me.png"}
-                        height={40}
-                        width={40}
-                        alt="User"
-                      />
-                      <p className=" text-[#717070] text-sm m-0">
-                        {message.me}
-                      </p>
-                    </div>
-                    <div className="bg-[#E9E9E9] mt-2 px-4 py-3 rounded-lg flex gap-2 items-center">
-                      <Image
-                        src={"/zenTrip.png"}
-                        height={40}
-                        width={40}
-                        alt="User"
-                      />
-                      <p className=" text-[#717070] text-sm m-0">
-                        {message.zenTrip}
-                      </p>
-                    </div>
+                      {/* Show TRIP LIST when recording is done */}
+                      {recordingCompleted &&
+                        message.stage === "dates_and_departure" && (
+                          <div className="flex-grow pb-10 mt-4">
+                            <h3 className="text-base font-medium text-gray-600 mb-2">
+                              Travel:
+                            </h3>
+                            {travelOptions.map((option, index) => (
+                              <TravelCard key={index} {...option} />
+                            ))}
+                            <h3 className="text-base font-medium text-gray-600 mt-4 mb-2">
+                              Stay:
+                            </h3>
+                            {stayOptions.map((option, index) => (
+                              <StayCard key={index} {...option} />
+                            ))}
+                          </div>
+                        )}
 
-                    {/* Show TRIP LIST when recording is done */}
-                    {recordingCompleted &&
-                      message.stage === "dates_and_departure" && (
-                        <div className="flex-grow pb-10 mt-4">
-                          <h3 className="text-base font-medium text-gray-600 mb-2">
-                            Travel:
-                          </h3>
-                          {travelOptions.map((option, index) => (
-                            <TravelCard key={index} {...option} />
-                          ))}
-                          <h3 className="text-base font-medium text-gray-600 mt-4 mb-2">
-                            Stay:
-                          </h3>
-                          {stayOptions.map((option, index) => (
-                            <StayCard key={index} {...option} />
-                          ))}
-                        </div>
+                      {recordingCompleted && message.stage === "thank_you" && (
+                        <>
+                          <div className="bg-[#E9E9E9] mt-2 px-4 py-3 rounded-lg flex gap-2 items-center">
+                            <p className=" text-[#717070] text-md m-0">
+                              <b className="font-[600]">
+                                🗓 Day 1: May 20, 2025 - Downtown Dubai
+                                Highlights
+                              </b>
+                              <br /> <br />
+                              Weather: ☀️ Sunny, 32°C
+                              <br />
+                              Summary: Luxury hotel check-in, sky-high lunch at
+                              Atmosphere, Burj Khalifa views, Dubai Mall
+                              exploration, and the famous Dubai Fountain Show.{" "}
+                              <br /> <br /> Activities:
+                              <ul className="list-disc list-inside text-sm">
+                                <li>
+                                  ✅ 10:00 – Check-in at Marriott Downtown (1h){" "}
+                                </li>
+                                <li>
+                                  ✅ 12:00 – Lunch at Atmosphere (2h, AED 450){" "}
+                                </li>
+                                <li>
+                                  ✅ 14:00 – Visit Burj Khalifa (2h, AED 300){" "}
+                                </li>
+                                <li>📍 16:00 – Dubai Mall visit (3h)</li>
+                                <li>📍 19:00 – Dubai Fountain Show (30m)</li>
+                              </ul>
+                            </p>
+                          </div>
+                          <div className="bg-[#E9E9E9] mt-2 px-4 py-3 rounded-lg flex gap-2 items-center">
+                            <p className=" text-[#717070] text-md m-0">
+                              <b className="font-[600]">
+                                🎈Day 2: May 21, 2025 - Desert Adventures &
+                                Romantic Dining
+                              </b>
+                              <br /> <br />
+                              Weather: ⛅ Partly Cloudy, 31°C
+                              <br />
+                              Summary: A thrilling desert day from a hot air
+                              balloon sunrise to dune bashing, ending with
+                              dinner over the sea.
+                              <br /> <br /> Activities:
+                              <ul className="list-disc list-inside text-sm">
+                                <li>
+                                  ✅ 06:00 – Hot Air Balloon Ride (4h, AED 1200)
+                                </li>
+                                <li>✅ 09:00 – Desert Safari (6h, AED 800)</li>
+                                <li>📍 15:00 – Relax at hotel (3h) </li>
+                                <li>
+                                  ✅ 19:00 – Dinner at Pierchic (2h, AED 600)
+                                </li>
+                              </ul>
+                            </p>
+                          </div>
+                          <div className="bg-[#E9E9E9] mt-2 px-4 py-3 rounded-lg flex gap-2 items-center">
+                            <p className=" text-[#717070] text-md m-0">
+                              <b className="font-[600]">
+                                🏓 Day 3: May 22, 2025 - Padel Tennis Experience
+                              </b>
+                              <br /> <br />
+                              Weather: ⛅ Partly Cloudy, 31°C
+                              <br />
+                              Summary: A full day of padel fun — from private
+                              coaching to VIP match viewing and even dinner with
+                              pro players.
+                              <br /> <br /> Activities:
+                              <ul className="list-disc list-inside text-sm">
+                                <li>
+                                  ✅ 09:00 – Padel Session @ Dubai Padel Club
+                                  (2h, AED 350)
+                                </li>
+                                <li>
+                                  ✅ 11:00 – Watch Padel Tournament (3h, AED
+                                  500)
+                                </li>
+                                <li>
+                                  ✅ 14:00 – Lunch at Padel Club (1h, AED 200)
+                                </li>
+                                <li>📍 15:00 – Padel Gear Shopping (1h)</li>
+                                <li>
+                                  ✅ 19:00 – Dinner with Players (3h, AED 800)
+                                </li>
+                              </ul>
+                            </p>
+                          </div>
+                          <div className="bg-[#E9E9E9] mt-2 px-4 py-3 rounded-lg flex gap-2 items-center">
+                            <p className=" text-[#717070] text-md m-0">
+                              <b className="font-[600]">
+                                🏖 Day 4: May 23, 2025 - Atlantis Indulgence Day
+                              </b>
+                              <br /> <br />
+                              Weather: ☀️ Sunny, 33°C
+                              <br />
+                              Summary: A luxury beach day with private cabana,
+                              fine dining, and fun at the world’s largest
+                              waterpark.
+                              <br /> <br /> Activities:
+                              <ul className="list-disc list-inside text-sm">
+                                <li>
+                                  ✅ 09:00 – Beach Cabana @ Atlantis (4h, AED
+                                  1000)
+                                </li>
+                                <li>✅ 13:00 – Lunch at Nobu (2h, AED 600)</li>
+                                <li>
+                                  ✅ 15:00 – Aquaventure Waterpark (3h, AED 400)
+                                </li>
+                                <li>📍 15:00 – Padel Gear Shopping (1h)</li>
+                                <li>
+                                  {" "}
+                                  ✅ 19:00 – Dinner at Ossiano (2h, AED 1200)
+                                </li>
+                              </ul>
+                            </p>
+                          </div>
+                        </>
                       )}
-
-                    {recordingCompleted && message.stage === "booking" && (
-                      <>
-                        {" "}
-                        <div className="bg-[#E9E9E9] mt-2 px-4 py-3 rounded-lg flex gap-2 items-center">
-                          <p className=" text-[#717070] text-md m-0">
-                            <b className="font-[600]">
-                              🗓 Day 1: May 20, 2025 - Downtown Dubai Highlights
-                            </b>
-                            <br /> <br />
-                            Weather: ☀️ Sunny, 32°C
-                            <br />
-                            Summary: Luxury hotel check-in, sky-high lunch at
-                            Atmosphere, Burj Khalifa views, Dubai Mall
-                            exploration, and the famous Dubai Fountain Show.{" "}
-                            <br /> <br /> Activities:
-                            <ul className="list-disc list-inside text-sm">
-                              <li>
-                                ✅ 10:00 – Check-in at Marriott Downtown (1h){" "}
-                              </li>
-                              <li>
-                                ✅ 12:00 – Lunch at Atmosphere (2h, AED 450){" "}
-                              </li>
-                              <li>
-                                ✅ 14:00 – Visit Burj Khalifa (2h, AED 300){" "}
-                              </li>
-                              <li>📍 16:00 – Dubai Mall visit (3h)</li>
-                              <li>📍 19:00 – Dubai Fountain Show (30m)</li>
-                            </ul>
-                          </p>
-                        </div>
-                        <div className="bg-[#E9E9E9] mt-2 px-4 py-3 rounded-lg flex gap-2 items-center">
-                          <p className=" text-[#717070] text-md m-0">
-                            <b className="font-[600]">
-                              🎈Day 2: May 21, 2025 - Desert Adventures &
-                              Romantic Dining
-                            </b>
-                            <br /> <br />
-                            Weather: ⛅ Partly Cloudy, 31°C
-                            <br />
-                            Summary: A thrilling desert day from a hot air
-                            balloon sunrise to dune bashing, ending with dinner
-                            over the sea.
-                            <br /> <br /> Activities:
-                            <ul className="list-disc list-inside text-sm">
-                              <li>
-                                ✅ 06:00 – Hot Air Balloon Ride (4h, AED 1200)
-                              </li>
-                              <li>✅ 09:00 – Desert Safari (6h, AED 800)</li>
-                              <li>📍 15:00 – Relax at hotel (3h) </li>
-                              <li>
-                                ✅ 19:00 – Dinner at Pierchic (2h, AED 600)
-                              </li>
-                            </ul>
-                          </p>
-                        </div>
-                        <div className="bg-[#E9E9E9] mt-2 px-4 py-3 rounded-lg flex gap-2 items-center">
-                          <p className=" text-[#717070] text-md m-0">
-                            <b className="font-[600]">
-                              🏓 Day 3: May 22, 2025 - Padel Tennis Experience
-                            </b>
-                            <br /> <br />
-                            Weather: ⛅ Partly Cloudy, 31°C
-                            <br />
-                            Summary: A full day of padel fun — from private
-                            coaching to VIP match viewing and even dinner with
-                            pro players.
-                            <br /> <br /> Activities:
-                            <ul className="list-disc list-inside text-sm">
-                              <li>
-                                ✅ 09:00 – Padel Session @ Dubai Padel Club (2h,
-                                AED 350)
-                              </li>
-                              <li>
-                                ✅ 11:00 – Watch Padel Tournament (3h, AED 500)
-                              </li>
-                              <li>
-                                ✅ 14:00 – Lunch at Padel Club (1h, AED 200)
-                              </li>
-                              <li>📍 15:00 – Padel Gear Shopping (1h)</li>
-                              <li>
-                                ✅ 19:00 – Dinner with Players (3h, AED 800)
-                              </li>
-                            </ul>
-                          </p>
-                        </div>
-                        <div className="bg-[#E9E9E9] mt-2 px-4 py-3 rounded-lg flex gap-2 items-center">
-                          <p className=" text-[#717070] text-md m-0">
-                            <b className="font-[600]">
-                              🏖 Day 4: May 23, 2025 - Atlantis Indulgence Day
-                            </b>
-                            <br /> <br />
-                            Weather: ☀️ Sunny, 33°C
-                            <br />
-                            Summary: A luxury beach day with private cabana,
-                            fine dining, and fun at the world’s largest
-                            waterpark.
-                            <br /> <br /> Activities:
-                            <ul className="list-disc list-inside text-sm">
-                              <li>
-                                ✅ 09:00 – Beach Cabana @ Atlantis (4h, AED
-                                1000)
-                              </li>
-                              <li>✅ 13:00 – Lunch at Nobu (2h, AED 600)</li>
-                              <li>
-                                ✅ 15:00 – Aquaventure Waterpark (3h, AED 400)
-                              </li>
-                              <li>📍 15:00 – Padel Gear Shopping (1h)</li>
-                              <li>
-                                {" "}
-                                ✅ 19:00 – Dinner at Ossiano (2h, AED 1200)
-                              </li>
-                            </ul>
-                          </p>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )
           )}
 
           {/* Show previous transcripts when not listening and not completed */}
@@ -435,10 +445,11 @@ export default function HomePage() {
           <MicrophoneButton
             onTranscriptChange={handleTranscriptChange}
             onListeningChange={handleListeningChange}
+            isLoadingResponse={isLoadingResponse}
           />
         </div>
       </div>
-      <div className="hidden-audio" id="audio-container"></div>
+      <div className="hidden" id="audio-container"></div>
     </main>
   );
 }

@@ -7,11 +7,12 @@ import { Mic, AudioLines } from "lucide-react";
 interface MicrophoneButtonProps {
   onTranscriptChange?: (transcript: string) => void;
   onListeningChange?: (isListening: boolean) => void;
+  isLoadingResponse?: boolean;
 }
 
 // Using memo to prevent unnecessary re-renders
 const MicrophoneButton: React.FC<MicrophoneButtonProps> = memo(
-  ({ onTranscriptChange, onListeningChange }) => {
+  ({ onTranscriptChange, onListeningChange, isLoadingResponse }) => {
     // Use a ref instead of state for mount detection
     const [ready, setReady] = useState(false);
 
@@ -94,7 +95,7 @@ const MicrophoneButton: React.FC<MicrophoneButtonProps> = memo(
         onClick={toggleListening}
         className={`bg-blue-600 ${buttonClasses} transition-all duration-300 ${
           listening ? "animate-pulse" : ""
-        }`}
+        }  ${isLoadingResponse ? "opacity-50" : ""}`}
         aria-label={listening ? "Stop listening" : "Start listening"}
       >
         {listening ? (
