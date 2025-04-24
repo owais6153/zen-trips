@@ -32,8 +32,8 @@ const travelOptions = [
     dates: "14 June - 21 June",
   },
   {
-    logoSrc: "/eithad-airways.png",
-    airlineName: "Eithad Airways",
+    logoSrc: "/etihad-airways.png",
+    airlineName: "Etihad Airways",
     route: "LHE - DXB",
     price: "AED 2640",
     dates: "14 June - 18 June",
