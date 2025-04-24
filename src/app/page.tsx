@@ -5,31 +5,113 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import MicrophoneButton from "@/components/MicrophoneButton";
 import TravelCard from "@/components/TravelCard";
 import StayCard from "@/components/StayCard";
+import ChatMesasgeCard from "@/components/ChatMessageCard";
+import ItineraryCard from "@/components/ItineraryCard";
 
 // Sample data based on the image - removed isSelected
 const travelOptions = [
   {
     logoSrc: "/emirates.png",
     airlineName: "Emirates",
-    route: "Isb - Dxb",
-    price: "AED 1200",
-    dates: "20 April - 25 April",
+    route: "LHE - DXB",
+    price: "AED 2000",
+    dates: "20 May - 24 May",
   },
   {
-    logoSrc: "/eithad.png",
-    airlineName: "Etihad",
-    route: "Isb - Dxb",
-    price: "AED 1250",
-    dates: "22 April - 27 April",
+    logoSrc: "/flydubai.png",
+    airlineName: "FlyDubai",
+    route: "LHE - DXB",
+    price: "AED 4000",
+    dates: "20 May - 24 May",
   },
 ];
 
 const stayOptions = [
   {
     logoSrc: "/marriot.png",
-    hotelName: "Marriott Marquis",
+    hotelName: "Marriott Downtown",
     price: "AED 400/Night",
-    dates: "20 April - 25 April",
+    dates: "20 May - 24 May",
+    rating: "4.8",
+    ameneties: [
+      "Pool",
+      "Spa",
+      "Gym",
+      "Resturant",
+      "Free Wifi",
+      "Airport Shuttle",
+    ],
+    room_type: "Deluxe Room",
+  },
+  {
+    logoSrc: "/burj-al-arab.png",
+    hotelName: "Burj Al Arab",
+    price: "AED 780/Night",
+    dates: "20 May - 24 May",
+    rating: "4.9",
+    ameneties: [
+      "Private Beach",
+      "Helipad",
+      "Luxury Spa",
+      "Butler Service",
+      "Free Wifi",
+      "Airport Shuttle",
+    ],
+    room_type: "Deluxe Suite",
+  },
+];
+
+const itinerary = [
+  {
+    day: "🗓 Day 1: May 20, 2025 - Downtown Dubai Highlights",
+    weather: "☀️ Sunny, 32°C",
+    summary:
+      "Luxury hotel check-in, sky-high lunch at Atmosphere, Burj Khalifa views, Dubai Mall exploration, and the famous Dubai Fountain Show.",
+    activities: [
+      "✅ 10:00 – Check-in at Marriott Downtown (1h)",
+      "✅ 12:00 – Lunch at Atmosphere (2h, AED 450)",
+      "✅ 14:00 – Visit Burj Khalifa (2h, AED 300)",
+      "📍 16:00 – Dubai Mall visit (3h)",
+      "📍 19:00 – Dubai Fountain Show (30m)",
+    ],
+  },
+  {
+    day: "🎈 Day 2: May 21, 2025 - Desert Adventures & Romantic Dining",
+    weather: "⛅ Partly Cloudy, 31°C",
+    summary:
+      "A thrilling desert day from a hot air balloon sunrise to dune bashing, ending with dinner over the sea.",
+    activities: [
+      "✅ 06:00 – Hot Air Balloon Ride (4h, AED 1200)",
+      "✅ 09:00 – Desert Safari (6h, AED 800)",
+      "📍 15:00 – Relax at hotel (3h)",
+      "✅ 19:00 – Dinner at Pierchic (2h, AED 600)",
+    ],
+  },
+  {
+    day: "🏓 Day 3: May 22, 2025 - Padel Tennis Experience",
+    weather: "⛅ Partly Cloudy, 31°C",
+    summary:
+      "A full day of padel fun — from private coaching to VIP match viewing and even dinner with pro players.",
+    activities: [
+      "✅ 09:00 – Padel Session @ Dubai Padel Club (2h, AED 350)",
+      "✅ 11:00 – Watch Padel Tournament (3h, AED 500)",
+      "✅ 14:00 – Lunch at Padel Club (1h, AED 200)",
+      "📍 15:00 – Padel Gear Shopping (1h)",
+      "✅ 19:00 – Dinner with Players (3h, AED 800)",
+    ],
+  },
+  {
+    day: "🏖 Day 4: May 23, 2025 - Atlantis Indulgence Day",
+    weather: "☀️ Sunny, 33°C",
+    summary:
+      "A luxury beach day with private cabana, fine dining, and fun at the world’s largest waterpark.",
+    activities: [
+      "✅ 09:00 – Beach Cabana @ Atlantis (4h, AED 1000)",
+      "✅ 13:00 – Lunch at Nobu (2h, AED 600)",
+      "✅ 15:00 – Aquaventure Waterpark (3h, AED 400)",
+      "📍 15:00 – Padel Gear Shopping (1h)",
+      "✅ 19:00 – Dinner at Ossiano (2h, AED 1200)",
+    ],
   },
 ];
 
@@ -48,7 +130,7 @@ function playBase64Audio(base64String: string) {
   audio.oncanplaythrough = () => audio.play();
 }
 
-type ChatMessages = Array<{ me: string; zenTrip: string; stage: string }>;
+type ChatMessages = Array<{ me: string; bot: string; stage: string }>;
 type Stage = "initial" | "dates_and_departure" | "booking" | "thank_you";
 
 export default function HomePage() {
@@ -90,7 +172,7 @@ export default function HomePage() {
           ...prevChat,
           {
             me: lasttranscript,
-            zenTrip: result.text_response,
+            bot: result.text_response,
             stage: conversationState.stage,
           },
         ]);
@@ -257,28 +339,8 @@ export default function HomePage() {
                 {chat.map((message, index) => {
                   return (
                     <div key={index} className="text-base">
-                      <div className="bg-[#E9E9E9] mt-2 px-4 py-3 rounded-lg flex gap-2 items-center">
-                        <Image
-                          src={"/me.png"}
-                          height={40}
-                          width={40}
-                          alt="User"
-                        />
-                        <p className=" text-[#717070] text-sm m-0">
-                          {message.me}
-                        </p>
-                      </div>
-                      <div className="bg-[#E9E9E9] mt-2 px-4 py-3 rounded-lg flex gap-2 items-center">
-                        <Image
-                          src={"/zenTrip.png"}
-                          height={40}
-                          width={40}
-                          alt="User"
-                        />
-                        <p className=" text-[#717070] text-sm m-0">
-                          {message.zenTrip}
-                        </p>
-                      </div>
+                      <ChatMesasgeCard message={message.me} type="me" />
+                      <ChatMesasgeCard message={message.bot} type="bot" />
 
                       {/* Show TRIP LIST when recording is done */}
                       {recordingCompleted &&
@@ -301,119 +363,9 @@ export default function HomePage() {
 
                       {recordingCompleted && message.stage === "thank_you" && (
                         <>
-                          <div className="bg-[#E9E9E9] mt-2 px-4 py-3 rounded-lg flex gap-2 items-center">
-                            <p className=" text-[#717070] text-md m-0">
-                              <b className="font-[600]">
-                                🗓 Day 1: May 20, 2025 - Downtown Dubai
-                                Highlights
-                              </b>
-                              <br /> <br />
-                              Weather: ☀️ Sunny, 32°C
-                              <br />
-                              Summary: Luxury hotel check-in, sky-high lunch at
-                              Atmosphere, Burj Khalifa views, Dubai Mall
-                              exploration, and the famous Dubai Fountain Show.{" "}
-                              <br /> <br /> Activities:
-                              <ul className="list-disc list-inside text-sm">
-                                <li>
-                                  ✅ 10:00 – Check-in at Marriott Downtown (1h){" "}
-                                </li>
-                                <li>
-                                  ✅ 12:00 – Lunch at Atmosphere (2h, AED 450){" "}
-                                </li>
-                                <li>
-                                  ✅ 14:00 – Visit Burj Khalifa (2h, AED 300){" "}
-                                </li>
-                                <li>📍 16:00 – Dubai Mall visit (3h)</li>
-                                <li>📍 19:00 – Dubai Fountain Show (30m)</li>
-                              </ul>
-                            </p>
-                          </div>
-                          <div className="bg-[#E9E9E9] mt-2 px-4 py-3 rounded-lg flex gap-2 items-center">
-                            <p className=" text-[#717070] text-md m-0">
-                              <b className="font-[600]">
-                                🎈Day 2: May 21, 2025 - Desert Adventures &
-                                Romantic Dining
-                              </b>
-                              <br /> <br />
-                              Weather: ⛅ Partly Cloudy, 31°C
-                              <br />
-                              Summary: A thrilling desert day from a hot air
-                              balloon sunrise to dune bashing, ending with
-                              dinner over the sea.
-                              <br /> <br /> Activities:
-                              <ul className="list-disc list-inside text-sm">
-                                <li>
-                                  ✅ 06:00 – Hot Air Balloon Ride (4h, AED 1200)
-                                </li>
-                                <li>✅ 09:00 – Desert Safari (6h, AED 800)</li>
-                                <li>📍 15:00 – Relax at hotel (3h) </li>
-                                <li>
-                                  ✅ 19:00 – Dinner at Pierchic (2h, AED 600)
-                                </li>
-                              </ul>
-                            </p>
-                          </div>
-                          <div className="bg-[#E9E9E9] mt-2 px-4 py-3 rounded-lg flex gap-2 items-center">
-                            <p className=" text-[#717070] text-md m-0">
-                              <b className="font-[600]">
-                                🏓 Day 3: May 22, 2025 - Padel Tennis Experience
-                              </b>
-                              <br /> <br />
-                              Weather: ⛅ Partly Cloudy, 31°C
-                              <br />
-                              Summary: A full day of padel fun — from private
-                              coaching to VIP match viewing and even dinner with
-                              pro players.
-                              <br /> <br /> Activities:
-                              <ul className="list-disc list-inside text-sm">
-                                <li>
-                                  ✅ 09:00 – Padel Session @ Dubai Padel Club
-                                  (2h, AED 350)
-                                </li>
-                                <li>
-                                  ✅ 11:00 – Watch Padel Tournament (3h, AED
-                                  500)
-                                </li>
-                                <li>
-                                  ✅ 14:00 – Lunch at Padel Club (1h, AED 200)
-                                </li>
-                                <li>📍 15:00 – Padel Gear Shopping (1h)</li>
-                                <li>
-                                  ✅ 19:00 – Dinner with Players (3h, AED 800)
-                                </li>
-                              </ul>
-                            </p>
-                          </div>
-                          <div className="bg-[#E9E9E9] mt-2 px-4 py-3 rounded-lg flex gap-2 items-center">
-                            <p className=" text-[#717070] text-md m-0">
-                              <b className="font-[600]">
-                                🏖 Day 4: May 23, 2025 - Atlantis Indulgence Day
-                              </b>
-                              <br /> <br />
-                              Weather: ☀️ Sunny, 33°C
-                              <br />
-                              Summary: A luxury beach day with private cabana,
-                              fine dining, and fun at the world’s largest
-                              waterpark.
-                              <br /> <br /> Activities:
-                              <ul className="list-disc list-inside text-sm">
-                                <li>
-                                  ✅ 09:00 – Beach Cabana @ Atlantis (4h, AED
-                                  1000)
-                                </li>
-                                <li>✅ 13:00 – Lunch at Nobu (2h, AED 600)</li>
-                                <li>
-                                  ✅ 15:00 – Aquaventure Waterpark (3h, AED 400)
-                                </li>
-                                <li>📍 15:00 – Padel Gear Shopping (1h)</li>
-                                <li>
-                                  {" "}
-                                  ✅ 19:00 – Dinner at Ossiano (2h, AED 1200)
-                                </li>
-                              </ul>
-                            </p>
-                          </div>
+                          {itinerary.map((item, index) => (
+                            <ItineraryCard key={index} {...item} />
+                          ))}
                         </>
                       )}
                     </div>
