@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useCallback, lazy, Suspense, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import MicrophoneButton from "@/components/MicrophoneButton";
 import TravelCard from "@/components/TravelCard";
 import StayCard from "@/components/StayCard";
@@ -49,6 +49,7 @@ function playBase64Audio(base64String: string) {
 }
 
 type ChatMessages = Array<{ me: string; zenTrip: string; stage: string }>;
+type Stage = "initial" | "dates_and_departure" | "booking" | "thank_you";
 
 export default function HomePage() {
   const [transcript, setTranscript] = useState("");
@@ -57,13 +58,11 @@ export default function HomePage() {
   const [recordingCompleted, setRecordingCompleted] = useState(false);
   const [isLoadingResponse, setIsLoadingResponse] = useState(false);
   const [chat, setChat] = useState<ChatMessages>([]);
-  const [conversationState, setConversationState] = useState<{ stage: string }>(
-    {
-      stage: "initial",
-    }
-  );
+  const [conversationState, setConversationState] = useState<{ stage: Stage }>({
+    stage: "initial",
+  });
 
-  const staticPrompts = {
+  const staticPrompts: Record<Stage, string> = {
     initial: "I want to visit Dubai",
     dates_and_departure:
       "my budget is 8000 AED and i am travelling from lahore on May 20 to May 24",
