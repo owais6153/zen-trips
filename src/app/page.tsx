@@ -15,14 +15,35 @@ const travelOptions = [
     airlineName: "Emirates",
     route: "LHE - DXB",
     price: "AED 2000",
-    dates: "20 May - 24 May",
+    dates: "14 June - 18 June",
   },
   {
     logoSrc: "/flydubai.png",
     airlineName: "FlyDubai",
     route: "LHE - DXB",
     price: "AED 4000",
-    dates: "20 May - 24 May",
+    dates: "14 June - 18 June",
+  },
+  {
+    logoSrc: "/qatar-airways.png",
+    airlineName: "Qatar Airways",
+    route: "LHE - DXB",
+    price: "AED 2750",
+    dates: "14 June - 21 June",
+  },
+  {
+    logoSrc: "/eithad-airways.png",
+    airlineName: "Eithad Airways",
+    route: "LHE - DXB",
+    price: "AED 2640",
+    dates: "14 June - 18 June",
+  },
+  {
+    logoSrc: "/turkish-airlines.png",
+    airlineName: "Turkish Airlines",
+    route: "LHE - DXB",
+    price: "AED 2300",
+    dates: "14 June - 18 June",
   },
 ];
 
@@ -31,7 +52,7 @@ const stayOptions = [
     logoSrc: "/marriot.png",
     hotelName: "Marriott Downtown",
     price: "AED 400/Night",
-    dates: "20 May - 24 May",
+    dates: "14 June - 18 June",
     rating: "4.8",
     ameneties: [
       "Pool",
@@ -47,7 +68,7 @@ const stayOptions = [
     logoSrc: "/burj-al-arab.png",
     hotelName: "Burj Al Arab",
     price: "AED 780/Night",
-    dates: "20 May - 24 May",
+    dates: "14 June - 18 June",
     rating: "4.9",
     ameneties: [
       "Private Beach",
@@ -57,6 +78,24 @@ const stayOptions = [
       "Free Wifi",
       "Airport Shuttle",
     ],
+    room_type: "Deluxe Suite",
+  },
+  {
+    logoSrc: "/atlantis.png",
+    hotelName: "Atlantis - The Palm",
+    price: "AED 760/Night",
+    dates: "14 June - 18 June",
+    rating: "4.8",
+    ameneties: ["Pool", "Spa", "Gym", "Resturant", "Parlor", "Beach Side View"],
+    room_type: "Deluxe Room",
+  },
+  {
+    logoSrc: "/Indigo.png",
+    hotelName: "Indigo Hotel - Downtown",
+    price: "AED 830/Night",
+    dates: "14 June - 18 June",
+    rating: "4.9",
+    ameneties: ["Pool", "Spa", "Gym", "Resturant", "Parlor", "Beach Side View"],
     room_type: "Deluxe Suite",
   },
 ];
@@ -157,7 +196,7 @@ export default function HomePage() {
     myHeaders.append("Content-Type", "application/json");
 
     const raw = JSON.stringify({
-      message: staticPrompts?.[conversationState.stage],
+      message: staticPrompts?.[conversationState.stage] || transcript,
       conversation_state: conversationState,
     });
     const requestOptions = {
