@@ -102,7 +102,7 @@ const stayOptions = [
 
 const itinerary = [
   {
-    day: "🗓 Day 1: May 20, 2025 - Downtown Dubai Highlights",
+    day: "🗓 Day 1: 14 June, 2025 - Downtown Dubai Highlights",
     weather: "☀️ Sunny, 32°C",
     summary:
       "Luxury hotel check-in, sky-high lunch at Atmosphere, Burj Khalifa views, Dubai Mall exploration, and the famous Dubai Fountain Show.",
@@ -115,7 +115,7 @@ const itinerary = [
     ],
   },
   {
-    day: "🎈 Day 2: May 21, 2025 - Desert Adventures & Romantic Dining",
+    day: "🎈 Day 2: 15 June, 2025 - Desert Adventures & Romantic Dining",
     weather: "⛅ Partly Cloudy, 31°C",
     summary:
       "A thrilling desert day from a hot air balloon sunrise to dune bashing, ending with dinner over the sea.",
@@ -127,7 +127,7 @@ const itinerary = [
     ],
   },
   {
-    day: "🏓 Day 3: May 22, 2025 - Padel Tennis Experience",
+    day: "🏓 Day 3: 16 June, 2025 - Padel Tennis Experience",
     weather: "⛅ Partly Cloudy, 31°C",
     summary:
       "A full day of padel fun — from private coaching to VIP match viewing and even dinner with pro players.",
@@ -140,7 +140,7 @@ const itinerary = [
     ],
   },
   {
-    day: "🏖 Day 4: May 23, 2025 - Atlantis Indulgence Day",
+    day: "🏖 Day 4: 17 June, 2025 - Atlantis Indulgence Day",
     weather: "☀️ Sunny, 33°C",
     summary:
       "A luxury beach day with private cabana, fine dining, and fun at the world’s largest waterpark.",
