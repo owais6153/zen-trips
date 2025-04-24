@@ -362,11 +362,14 @@ export default function HomePage() {
                         )}
 
                       {recordingCompleted && message.stage === "thank_you" && (
-                        <>
+                        <div className="flex-grow pb-10 mt-4">
+                          <h3 className="text-base font-medium text-gray-600 mb-2">
+                            Itinerary:
+                          </h3>
                           {itinerary.map((item, index) => (
                             <ItineraryCard key={index} {...item} />
                           ))}
-                        </>
+                        </div>
                       )}
                     </div>
                   );

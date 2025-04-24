@@ -19,14 +19,14 @@ const StayCard: React.FC<StayCardProps> = ({
   ameneties,
 }) => {
   return (
-    <div className="bg-gray-100 p-4 rounded-lg flex items-center space-x-3 mb-3">
-      <div className="flex-shrink-0">
+    <div className="bg-gray-100 p-4 rounded-lg flex items-top space-x-3 mb-3">
+      <div className="flex-shrink-0 ">
         <Image
           src={logoSrc}
           alt={`${hotelName} Logo`}
           width={50}
           height={50}
-          className="rounded-md"
+          className="rounded-md  h-[50px] w-[50px] bg-white object-contain"
         />
       </div>
       <div className="flex-grow">
@@ -37,16 +37,18 @@ const StayCard: React.FC<StayCardProps> = ({
         <p className="text-sm text-[rgba(76,73,73,0.88)]">{dates}</p>
         <p className="text-sm text-[rgba(76,73,73,0.88)]">Rating: {rating}</p>
         {ameneties.length > 0 && (
-          <p className="text-sm text-[rgba(76,73,73,0.88)]">
-            Amenitis:
-            <ul className="list-disc list-inside ">
-              {ameneties.map((amenity, index) => (
-                <li key={index} className="">
-                  {amenity}
-                </li>
-              ))}
-            </ul>
-          </p>
+          <>
+            <p className="text-sm text-[rgba(76,73,73,0.88)]">
+              Amenitis:
+              <ul className="list-disc list-inside ">
+                {ameneties.map((amenity, index) => (
+                  <li key={index} className="">
+                    {amenity}
+                  </li>
+                ))}
+              </ul>
+            </p>
+          </>
         )}
       </div>
     </div>
