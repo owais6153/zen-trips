@@ -67,7 +67,7 @@ export default function HomePage() {
     initial: "I want to visit Dubai",
     dates_and_departure:
       "my budget is 8000 AED and i am travelling from lahore on May 20 to May 24",
-    thank_you: "Thank you, book the emirates flight and marriot downtown hotel",
+    booking: "Thank you, book the emirates flight and marriot downtown hotel",
     thank_you: "Great, thank you!",
   };
 
@@ -292,9 +292,10 @@ export default function HomePage() {
                         </div>
                       )}
 
-                    {recordingCompleted && message.stage === "thank_you" && (
+                    {recordingCompleted && message.stage === "booking" && (
                       <>
-                        <div className="bg-[#E9E9E9] mt-4 px-4 py-3 rounded-lg flex gap-2 items-center">
+                        {" "}
+                        <div className="bg-[#E9E9E9] mt-2 px-4 py-3 rounded-lg flex gap-2 items-center">
                           <p className=" text-[#717070] text-md m-0">
                             <b className="font-[600]">
                               🗓 Day 1: May 20, 2025 - Downtown Dubai Highlights
@@ -306,7 +307,7 @@ export default function HomePage() {
                             Atmosphere, Burj Khalifa views, Dubai Mall
                             exploration, and the famous Dubai Fountain Show.{" "}
                             <br /> <br /> Activities:
-                            <ul className="list-disc list-inside ">
+                            <ul className="list-disc list-inside text-sm">
                               <li>
                                 ✅ 10:00 – Check-in at Marriott Downtown (1h){" "}
                               </li>
@@ -321,7 +322,7 @@ export default function HomePage() {
                             </ul>
                           </p>
                         </div>
-                        <div className="bg-[#E9E9E9] mt-4 px-4 py-3 rounded-lg flex gap-2 items-center">
+                        <div className="bg-[#E9E9E9] mt-2 px-4 py-3 rounded-lg flex gap-2 items-center">
                           <p className=" text-[#717070] text-md m-0">
                             <b className="font-[600]">
                               🎈Day 2: May 21, 2025 - Desert Adventures &
@@ -334,7 +335,7 @@ export default function HomePage() {
                             balloon sunrise to dune bashing, ending with dinner
                             over the sea.
                             <br /> <br /> Activities:
-                            <ul className="list-disc list-inside ">
+                            <ul className="list-disc list-inside text-sm">
                               <li>
                                 ✅ 06:00 – Hot Air Balloon Ride (4h, AED 1200)
                               </li>
@@ -346,7 +347,7 @@ export default function HomePage() {
                             </ul>
                           </p>
                         </div>
-                        <div className="bg-[#E9E9E9] mt-4 px-4 py-3 rounded-lg flex gap-2 items-center">
+                        <div className="bg-[#E9E9E9] mt-2 px-4 py-3 rounded-lg flex gap-2 items-center">
                           <p className=" text-[#717070] text-md m-0">
                             <b className="font-[600]">
                               🏓 Day 3: May 22, 2025 - Padel Tennis Experience
@@ -358,7 +359,7 @@ export default function HomePage() {
                             coaching to VIP match viewing and even dinner with
                             pro players.
                             <br /> <br /> Activities:
-                            <ul className="list-disc list-inside ">
+                            <ul className="list-disc list-inside text-sm">
                               <li>
                                 ✅ 09:00 – Padel Session @ Dubai Padel Club (2h,
                                 AED 350)
@@ -376,7 +377,7 @@ export default function HomePage() {
                             </ul>
                           </p>
                         </div>
-                        <div className="bg-[#E9E9E9] mt-4 px-4 py-3 rounded-lg flex gap-2 items-center">
+                        <div className="bg-[#E9E9E9] mt-2 px-4 py-3 rounded-lg flex gap-2 items-center">
                           <p className=" text-[#717070] text-md m-0">
                             <b className="font-[600]">
                               🏖 Day 4: May 23, 2025 - Atlantis Indulgence Day
@@ -388,7 +389,7 @@ export default function HomePage() {
                             fine dining, and fun at the world’s largest
                             waterpark.
                             <br /> <br /> Activities:
-                            <ul className="list-disc list-inside ">
+                            <ul className="list-disc list-inside text-sm">
                               <li>
                                 ✅ 09:00 – Beach Cabana @ Atlantis (4h, AED
                                 1000)
